@@ -1,0 +1,59 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List, Optional
+
+app = FastAPI(
+    title="AQARIONZ Core Prototype",
+    description=(
+        "Sovereign, local-first multi-agent signal lab. "
+        "Takes raw inputs (signals, questions, stories) "
+        "and returns harmonics, visuals, and research logs."
+    ),
+    version="0.1.0",
+)
+
+
+class SignalInput(BaseModel):
+    channel: str            # e.g. 'imu', 'text', 'story', 'vision'
+    payload: str            # raw content
+    tags: Optional[List[str]] = None
+
+
+class SignalResponse(BaseModel):
+    channel: str
+    intent: str
+    harmonics: List[float]
+    narrative: str
+    log_id: str
+
+
+@app.get("/health", tags=["system"])
+def health_check():
+    return {"status": "ok", "engine": "AQARIONZ-core", "phase": "prototype"}
+
+
+@app.post("/signal", response_model=SignalResponse, tags=["signal-lab"])
+def ingest_signal(signal: SignalInput):
+    base = float(len(signal.payload) or 1)
+    harmonics = [round(base % 13, 3), round((base * 3.14) % 21, 3), round((base * 1.618) % 8, 3)]
+
+    intent = "exploration"
+    if signal.channel.lower() == "story":
+        intent = "narrative-mapping"
+    elif signal.channel.lower() == "question":
+        intent = "oracle-query"
+
+    narrative = (
+        f"AQARIONZ received a {signal.channel} channel with {len(signal.payload)} symbols. "
+        f"Phase-0 prototype mapped it to a {intent} trace with {len(harmonics)} harmonics."
+    )
+
+    log_id = f"aq-log-{len(signal.payload)}-{signal.channel.lower()}"
+
+    return SignalResponse(
+        channel=signal.channel,
+        intent=intent,
+        harmonics=harmonics,
+        narrative=narrative,
+        log_id=log_id,
+    )
