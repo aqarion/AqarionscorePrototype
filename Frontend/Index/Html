@@ -1,0 +1,464 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AQARIONZ Core Prototype – Signal Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(148,163,184,0.4);
+      background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(30,64,175,0.6));
+      box-shadow: 0 12px 40px rgba(15,23,42,0.9);
+    }
+    header h1 {
+      font-size: 1.25rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bfdbfe;
+    }
+    header p {
+      margin-top: 0.3rem;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+    header span.badge {
+      display: inline-block;
+      margin-left: 0.6rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.12);
+      border: 1px solid rgba(56,189,248,0.6);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #e0f2fe;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      padding: 0.9rem;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .pane {
+      position: relative;
+      border-radius: 0.9rem;
+      padding: 0.8rem;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.95), rgba(15,23,42,0.85));
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: 0 18px 45px rgba(15,23,42,0.95);
+      overflow: hidden;
+    }
+    .pane::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      opacity: 0.28;
+      background:
+        radial-gradient(circle at 20% 0, rgba(56,189,248,0.3), transparent 55%),
+        radial-gradient(circle at 85% 100%, rgba(129,140,248,0.3), transparent 50%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .pane-header {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.7rem;
+      z-index: 1;
+    }
+    .pane-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #a5b4fc;
+    }
+    .pane-subtitle {
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+    .pill {
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #e5e7eb;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #9ca3af;
+      margin-bottom: 0.3rem;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      padding: 0.45rem 0.55rem;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      max-height: 200px;
+    }
+    select:focus, textarea:focus, input[type="text"]:focus {
+      border-color: rgba(96,165,250,0.9);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.9);
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(to right, #22c55e, #06b6d4);
+      color: #020617;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 35px rgba(34,197,94,0.4);
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .status-line {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .status-line span.key {
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.65rem;
+    }
+
+    .console {
+      position: relative;
+      margin-top: 0.4rem;
+      padding: 0.6rem;
+      border-radius: 0.6rem;
+      background: radial-gradient(circle at 0 0, rgba(8,47,73,0.9), rgba(15,23,42,0.95));
+      border: 1px solid rgba(30,64,175,0.8);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.72rem;
+      color: #e5e7eb;
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .console span.prompt {
+      color: #60a5fa;
+    }
+    .console span.value {
+      color: #a5b4fc;
+    }
+
+    .harmonics-row {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.35rem;
+      font-size: 0.7rem;
+    }
+    .harmonic-chip {
+      padding: 0.16rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.8);
+      color: #dbeafe;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .map-grid {
+      margin-top: 0.3rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.3rem;
+      font-size: 0.7rem;
+    }
+    .map-cell {
+      padding: 0.35rem 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: radial-gradient(circle at 20% 0, rgba(59,130,246,0.35), rgba(15,23,42,0.98));
+      min-height: 2.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .map-cell span.label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.6rem;
+      color: #9ca3af;
+    }
+    .map-cell span.value {
+      font-size: 0.72rem;
+      color: #e5e7eb;
+    }
+
+    footer {
+      padding: 0.45rem 1rem;
+      border-top: 1px solid rgba(31,41,55,0.9);
+      font-size: 0.7rem;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AQARIONZ Core Prototype <span class="badge">Phase‑0 · Local‑First</span></h1>
+    <p>Signal Lab · OuijaAI · Sovereignty Map – a minimal, extensible reality‑engine scaffold.</p>
+  </header>
+
+  <main>
+    <!-- SIGNAL LAB -->
+    <section class="pane" id="signal-pane">
+      <div class="pane-header">
+        <div>
+          <div class="pane-title">Signal Lab</div>
+          <div class="pane-subtitle">Feed AQARIONZ raw channels</div>
+        </div>
+        <span class="pill">Input</span>
+      </div>
+
+      <label for="channel">Channel</label>
+      <select id="channel">
+        <option value="story">story</option>
+        <option value="question">question</option>
+        <option value="imu">imu / motion</option>
+        <option value="vision">vision / frame</option>
+        <option value="text">plain text</option>
+      </select>
+
+      <label for="payload" style="margin-top:0.5rem;">Payload</label>
+      <textarea id="payload" placeholder="Type a story fragment, a question, or a brief signal description…"></textarea>
+
+      <label for="tags" style="margin-top:0.5rem;">Tags (comma‑separated)</label>
+      <input id="tags" type="text" placeholder="e.g. prototype, phase‑0, calibration" />
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.7rem;">
+        <button id="send-btn">Transmit to Core</button>
+        <div class="status-line">
+          <span class="key">Status:</span>
+          <span id="status-text">Idle · awaiting first signal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUIJAAI -->
+    <section class="pane" id="ouija-pane">
+      <div class="pane-header">
+        <div>
+          <div class="pane-title">OuijaAI</div>
+          <div class="pane-subtitle">Narrative + intent trace</div>
+        </div>
+        <span class="pill">Engine</span>
+      </div>
+
+      <div class="console" id="ouija-console">
+        <span class="prompt">&gt; </span><span class="value">No signals yet. The board is quiet.</span>
+      </div>
+
+      <div class="harmonics-row" id="harmonics-row" style="display:none;"></div>
+
+      <div class="status-line" style="margin-top:0.5rem;">
+        <span class="key">Intent:</span>
+        <span id="intent-text">–</span>
+      </div>
+      <div class="status-line">
+        <span class="key">Log ID:</span>
+        <span id="logid-text">–</span>
+      </div>
+    </section>
+
+    <!-- SOVEREIGNTY MAP -->
+    <section class="pane" id="map-pane">
+      <div class="pane-header">
+        <div>
+          <div class="pane-title">Sovereignty Map</div>
+          <div class="pane-subtitle">How this signal lands</div>
+        </div>
+        <span class="pill">Telemetry</span>
+      </div>
+
+      <div class="map-grid">
+        <div class="map-cell">
+          <span class="label">Channel</span>
+          <span class="value" id="map-channel">–</span>
+        </div>
+        <div class="map-cell">
+          <span class="label">Mood</span>
+          <span class="value" id="map-mood">–</span>
+        </div>
+        <div class="map-cell">
+          <span class="label">Phase</span>
+          <span class="value" id="map-phase">Phase‑0 · Prototype</span>
+        </div>
+        <div class="map-cell">
+          <span class="label">Energy</span>
+          <span class="value" id="map-energy">–</span>
+        </div>
+        <div class="map-cell">
+          <span class="label">Coherence</span>
+          <span class="value" id="map-coherence">–</span>
+        </div>
+        <div class="map-cell">
+          <span class="label">Notes</span>
+          <span class="value" id="map-notes">Waiting for first trace.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>AQARIONZ Core Prototype · FastAPI backend at <code>http://127.0.0.1:8000</code></span>
+    <span>Endpoints: <code>/health</code>, <code>/signal</code></span>
+  </footer>
+
+  <script>
+    const sendBtn = document.getElementById('send-btn');
+    const statusText = document.getElementById('status-text');
+    const consoleEl = document.getElementById('ouija-console');
+    const harmonicsRow = document.getElementById('harmonics-row');
+    const intentText = document.getElementById('intent-text');
+    const logIdText = document.getElementById('logid-text');
+
+    const mapChannel = document.getElementById('map-channel');
+    const mapMood = document.getElementById('map-mood');
+    const mapPhase = document.getElementById('map-phase');
+    const mapEnergy = document.getElementById('map-energy');
+    const mapCoherence = document.getElementById('map-coherence');
+    const mapNotes = document.getElementById('map-notes');
+
+    async function transmit() {
+      const channel = document.getElementById('channel').value;
+      const payload = document.getElementById('payload').value.trim();
+      const tagsRaw = document.getElementById('tags').value.trim();
+
+      if (!payload) {
+        alert('Please provide a payload for AQARIONZ.');
+        return;
+      }
+
+      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : null;
+
+      sendBtn.disabled = true;
+      statusText.textContent = 'Transmitting…';
+
+      const body = { channel, payload };
+      if (tags && tags.length) body.tags = tags;
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/signal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+
+        // OuijaAI console
+        consoleEl.innerHTML =
+          '<span class="prompt">&gt; </span><span class="value">' +
+          data.narrative +
+          '</span>';
+
+        // Harmonics chips
+        harmonicsRow.innerHTML = '';
+        if (Array.isArray(data.harmonics) && data.harmonics.length) {
+          data.harmonics.forEach((h, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'harmonic-chip';
+            chip.textContent = 'H' + (idx + 1) + ' = ' + h.toFixed(3);
+            harmonicsRow.appendChild(chip);
+          });
+          harmonicsRow.style.display = 'flex';
+        } else {
+          harmonicsRow.style.display = 'none';
+        }
+
+        intentText.textContent = data.intent || 'unknown';
+        logIdText.textContent = data.log_id || '–';
+
+        // Sovereignty Map
+        mapChannel.textContent = data.channel || channel;
+        mapPhase.textContent = 'Phase‑0 · Prototype';
+
+        const length = payload.length;
+        let mood = 'neutral';
+        if (length < 40) mood = 'whisper';
+        else if (length < 160) mood = 'focused';
+        else mood = 'flood';
+
+        mapMood.textContent = mood;
+        mapEnergy.textContent = (data.harmonics && data.harmonics[0] != null)
+          ? data.harmonics[0].toFixed(2)
+          : '–';
+
+        mapCoherence.textContent = (data.harmonics && data.harmonics.length >= 2)
+          ? data.harmonics[1].toFixed(2)
+          : '–';
+
+        mapNotes.textContent = 'Trace ' + (data.log_id || '–') +
+          ' registered as ' + data.intent + ' on ' + (data.channel || channel) + ' channel.';
+
+        statusText.textContent = 'Trace logged successfully.';
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = 'Error talking to backend.';
+        consoleEl.innerHTML =
+          '<span class="prompt">&gt; </span><span class="value">Core unreachable. ' +
+          'Make sure FastAPI is running on http://127.0.0.1:8000.</span>';
+        harmonicsRow.style.display = 'none';
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.addEventListener('click', transmit);
+  </script>
+</body>
+</html>
+```
+
+Citations:
+[1] 1000010457.jpg https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/images/83180058/02e02dd3-72e8-4c47-aeef-544218d555d8/1000010457.jpg
