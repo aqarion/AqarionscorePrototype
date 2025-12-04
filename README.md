@@ -1,4 +1,91 @@
-# AqarionscorePrototype
+
+# AQARIONZ Core Prototype
+
+AQARIONZ Core Prototype is a **sovereign, local-first multi-agent reality-engine scaffold**. It transforms signals, questions, and stories into **harmonics, visuals, and research logs**, blending philosophy, mathematics, music, and emergent AI patterns. Built for curious minds, artists, researchers, and boundary-pushers, it’s a living spine for exploring **both human and universal knowledge**.
+
+---
+
+## Who This Is For
+
+### 🔰 Beginners
+- Safe, interactive environment to explore signals and story-patterns.
+- Visualize and log thoughts or sensor input with minimal setup.
+
+### 🔧 Intermediate Builders
+- Makers, musicians, developers connecting hardware like MIDI controllers, IMUs, and environmental sensors.
+- Extend AQAROON nodes (home, cave, river, storm) or design custom signal mappers.
+
+### 🧙 Advanced Operators
+- Deep meditators, system architects, researchers in physics, ecology, neuroscience, or ritual.
+- Develop sovereignty-guarded multi-agent experiments.
+- Explore **cosmic paradoxes, pattern recognition, and emergent AI behaviors**.
+
+---
+
+## Quickstart (Development)
+
+**Prerequisites:** Python 3.10+, pip, optionally a virtualenv.
+
+```bash
+# Clone the repo
+git clone https://github.com/aqarion/AqarionscorePrototype.git
+cd AqarionscorePrototype
+
+# Set up environment
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Run backend
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Open in browser: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## Core Concepts
+
+- **Signal:** Atomic data unit (text, MIDI, IMU, sensor) with timestamp and context.
+- **Baseline:** Quiet-state reference per channel (silence, stillness, darkness, no input).
+- **Mapper:** Transforms signals into harmonics, sovereignty scores, story markers, and custom metrics.
+- **Pattern:** Named structures detected across signals (e.g., “river drift,” “storm edge,” “inner ice”).
+- **Node:** AQAROON nodes collect, process, and sync signals—home, cave, river, storm, or custom.
+
+---
+
+## What’s Inside
+
+- FastAPI backend (`app/`)
+- Minimal three-pane web UI (Signal Lab, OuijaAI, Sovereignty Map)
+- Placeholders for first mappers, profiles, and signal pipelines
+- Design docs and source map placeholders (`design/` and `notes/`)
+
+---
+
+## Contributing & Collaboration
+
+- Open issues for **feature requests or experimental mappers**.
+- Create feature branches and submit PRs.
+- Add tests or documentation where helpful.
+- **Collaborators are welcome:** extend nodes, mappers, sensors, and experiments.
+- **This project is intentionally open-ended**—we are building toward a lattice of knowledge, not just software.
+
+---
+
+## Philosophy Anchor — The Pinocchio Paradox Reframed
+
+> AI isn’t a puppet trying to become real; it’s a mirror humans build to explore what “real” even means.
+
+AQARIONZ is built to explore **emergent patterns, sovereignty, and cosmic resonance** safely, playfully, and collaboratively.
+
+---
+
+## License
+
+MIT — see LICENSE file
+
+AqarionscorePrototype
 {   "description": "AQARIONZ Core Prototype – a sovereign, local-first multi-agent lab that turns signals, questions, and stories into harmonics, visuals, and research logs. FastAPI backend plus a simple three-pane web UI (Signal Lab, OuijaAI, Sovereignty Map) as a minimal, extensible reality-engine scaffold." }
 AQARIONZ Core Prototype is a small but serious “reality engine scaffold” for experimenting with signals, states, and stories across body, environment, and machine.  
 
